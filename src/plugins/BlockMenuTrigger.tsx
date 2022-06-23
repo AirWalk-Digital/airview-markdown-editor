@@ -1,6 +1,6 @@
 import { InputRule } from "prosemirror-inputrules";
-import ReactDOM from "react-dom";
 import * as React from "react";
+import { createRoot } from "react-dom/client";
 import { Plugin } from "prosemirror-state";
 import { isInTable } from "prosemirror-tables";
 import { findParentNode } from "prosemirror-utils";
@@ -46,7 +46,8 @@ export default class BlockMenuTrigger extends Extension {
     const button = document.createElement("button");
     button.className = "block-menu-trigger";
     button.type = "button";
-    ReactDOM.render(<PlusIcon color="currentColor" />, button);
+    const root = createRoot(button!);
+    root.render(<PlusIcon color="currentColor" />);
 
     return [
       new Plugin({
@@ -93,9 +94,9 @@ export default class BlockMenuTrigger extends Extension {
 
             return false;
           },
-          decorations: state => {
+          decorations: (state) => {
             const parent = findParentNode(
-              node => node.type.name === "paragraph"
+              (node) => node.type.name === "paragraph"
             )(state.selection);
 
             if (!parent) {
