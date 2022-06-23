@@ -38,14 +38,14 @@ const cache: Record<number, { node: Node; decorations: Decoration[] }> = {};
 function getDecorations({ doc, name }: { doc: Node; name: string }) {
   const decorations: Decoration[] = [];
   const blocks: { node: Node; pos: number }[] = findBlockNodes(doc).filter(
-    item => item.node.type.name === name
+    (item) => item.node.type.name === name
   );
 
   function parseNodes(
     nodes: refractor.RefractorNode[],
     classNames: string[] = []
   ): any {
-    return nodes.map(node => {
+    return nodes.map((node) => {
       if (node.type === "element") {
         const classes = [...classNames, ...(node.properties.className || [])];
         return parseNodes(node.children, classes);
@@ -58,7 +58,7 @@ function getDecorations({ doc, name }: { doc: Node; name: string }) {
     });
   }
 
-  blocks.forEach(block => {
+  blocks.forEach((block) => {
     let startPos = block.pos + 1;
     const language = block.node.attrs.language;
     if (!language || language === "none" || !refractor.registered(language)) {
@@ -80,8 +80,8 @@ function getDecorations({ doc, name }: { doc: Node; name: string }) {
             to,
           };
         })
-        .filter(node => node.classes && node.classes.length)
-        .map(node =>
+        .filter((node) => node.classes && node.classes.length)
+        .map((node) =>
           Decoration.inline(node.from, node.to, {
             class: node.classes.join(" "),
           })
@@ -92,14 +92,14 @@ function getDecorations({ doc, name }: { doc: Node; name: string }) {
         decorations: _decorations,
       };
     }
-    cache[block.pos].decorations.forEach(decoration => {
+    cache[block.pos].decorations.forEach((decoration) => {
       decorations.push(decoration);
     });
   });
 
   Object.keys(cache)
-    .filter(pos => !blocks.find(block => block.pos === Number(pos)))
-    .forEach(pos => {
+    .filter((pos) => !blocks.find((block) => block.pos === Number(pos)))
+    .forEach((pos) => {
       delete cache[Number(pos)];
     });
 
@@ -112,6 +112,7 @@ export default function Prism({ name }) {
   return new Plugin({
     key: new PluginKey("prism"),
     state: {
+      // @ts-ignore
       init: (_: Plugin, { doc }) => {
         return DecorationSet.create(doc, []);
       },
@@ -130,7 +131,7 @@ export default function Prism({ name }) {
         return decorationSet.map(transaction.mapping, transaction.doc);
       },
     },
-    view: view => {
+    view: (view) => {
       if (!highlighted) {
         // we don't highlight code blocks on the first render as part of mounting
         // as it's expensive (relative to the rest of the document). Instead let
@@ -144,6 +145,7 @@ export default function Prism({ name }) {
     },
     props: {
       decorations(state) {
+        // @ts-ignore
         return this.getState(state);
       },
     },
